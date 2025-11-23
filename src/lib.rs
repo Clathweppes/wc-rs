@@ -59,12 +59,23 @@ impl Options {
     }
 }
 
+#[derive(Default)]
 pub struct Counts {
-    lines: usize,
-    words: usize,
-    bytes: usize,
-    chars: usize,
-    max_line_length: usize,
+    pub lines: usize,
+    pub words: usize,
+    pub bytes: usize,
+    pub chars: usize,
+    pub max_line_length: usize,
+}
+
+impl Counts {
+    pub fn add(&mut self, other: &Counts) {
+        self.lines += other.lines;
+        self.words += other.words;
+        self.bytes += other.bytes;
+        self.chars += other.chars;
+        self.max_line_length = self.max_line_length.max(other.max_line_length);
+    }
 }
 
 pub fn read_file(filename: &str) -> Result<String, std::io::Error> {
