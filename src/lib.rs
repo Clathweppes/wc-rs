@@ -137,3 +137,74 @@ pub fn print_counts(filename: &str, counts: &Counts, options: &Options) {
     }
     println!();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::Write;
+
+    #[test]
+    fn test_read_file() {
+        let filename = "test_file.txt";
+        let content = "Hello, world!\nThis is a test file.";
+        let mut file = File::create(filename).unwrap();
+        write!(file, "{}", content).unwrap();
+
+        let result = read_file(filename).unwrap();
+        assert_eq!(result, content);
+
+        std::fs::remove_file(filename).unwrap();
+    }
+
+    #[test]
+    fn test_count_file() {
+        let content = "Hello, world!\nThis is a test file.";
+        let filename = "test_count_file.txt";
+        let mut file = File::create(filename).unwrap();
+        write!(file, "{}", content).unwrap();
+
+        let options = Options {
+            count_lines: true,
+            count_words: true,
+            count_bytes: true,
+            count_chars: true,
+            count_max_line_length: true,
+        };
+
+        let counts = count_file(filename, &options).unwrap();
+        assert_eq!(counts.lines, 2);
+        assert_eq!(counts.words, 7);
+        assert_eq!(counts.bytes, content.len());
+        assert_eq!(counts.chars, content.chars().count());
+        assert_eq!(counts.max_line_length, 20);
+
+        std::fs::remove_file(filename).unwrap();
+    }
+
+    #[test]
+    fn test_counts_add() {
+        let mut counts1 = Counts {
+            lines: 2,
+            words: 5,
+            bytes: 30,
+            chars: 30,
+            max_line_length: 15,
+        };
+        let counts2 = Counts {
+            lines: 3,
+            words: 10,
+            bytes: 50,
+            chars: 50,
+            max_line_length: 20,
+        };
+
+        counts1.add(&counts2);
+
+        assert_eq!(counts1.lines, 5);
+        assert_eq!(counts1.words, 15);
+        assert_eq!(counts1.bytes, 80);
+        assert_eq!(counts1.chars, 80);
+        assert_eq!(counts1.max_line_length, 20);
+    }
+}

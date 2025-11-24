@@ -13,7 +13,7 @@ fn main() {
                 wc_rs::print_counts(filename, &counts, &options);
                 total_counts.add(&counts);
                 success_count += 1;
-            },
+            }
             Err(e) => {
                 eprintln!("Error reading {}: {}", filename, e);
                 std::process::exit(1);
